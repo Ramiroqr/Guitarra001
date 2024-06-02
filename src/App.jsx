@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Guitar from "./components/Guitar"
 import Header from "./components/Header"
 import { db } from "./data/db"
@@ -21,10 +21,54 @@ function App() {
   }
 }
 
+useEffect(() => {
+  localStorage.setItem('cart', JSON.stringify(cart))
+}, [cart])
+
+function removeFromCart(id) {
+  setCart(prevCart => prevCart.filter(guitar => guitar.id !== id))
+}
+
+function increaseQuantity(id) {
+  const updatedCart = cart.map(item => {
+    if(item.id === id && item.quantity < 5) {
+      return {
+        ...item,
+        quantity: item.quantity + 1
+      }
+    }
+    return item
+  })
+
+  setCart(updatedCart)
+}
+
+function decreaseQuantity(id) {
+  const updatedCart = cart.map(item => {
+    if(item.id === id && item.quantity > 1) {
+      return {
+        ...item,
+        quantity: item.quantity - 1
+      }
+    }
+    return item
+  })
+
+  setCart(updatedCart)
+}
+
+function clearCart() {
+  setCart([])
+}
+
   return (
     <>
       <Header 
         cart={cart}
+        removeFromCart={removeFromCart}
+        increaseQuantity={increaseQuantity}
+        decreaseQuantity={decreaseQuantity}
+        clearCart={clearCart}
       />
 
       <main className="container-xl mt-5">
